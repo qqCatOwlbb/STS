@@ -3,7 +3,6 @@ package com.catowl.sts.service.impl;
 import com.catowl.sts.exception.InternetServerException;
 import com.catowl.sts.exception.UnauthorizedException;
 import com.catowl.sts.mapper.AuthMapper;
-import com.catowl.sts.model.DTO.Response.UserResponse;
 import com.catowl.sts.model.entity.User;
 import com.catowl.sts.service.UserService;
 import com.catowl.sts.utils.JwtUtil;
@@ -11,7 +10,6 @@ import com.catowl.sts.utils.RedisCache;
 import de.huxhorn.sulky.ulid.ULID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -82,6 +80,7 @@ public class UserServiceImpl implements UserService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User loginUser = (User) authentication.getPrincipal();
         Long userId = loginUser.getId();
+        deleteOldAvatar(loginUser.getAvatar());
         return userMapper.deleteUser(userId);
     }
 

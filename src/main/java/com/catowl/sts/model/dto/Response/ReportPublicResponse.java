@@ -1,4 +1,4 @@
-package com.catowl.sts.model.DTO.Response;
+package com.catowl.sts.model.dto.Response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -23,6 +23,9 @@ public class ReportPublicResponse {
 
     @Schema(description = "Dify 生成的报告全文 (Markdown 或 Text)")
     private String reportContent;
+
+    @Schema(description = "二维码的存储路径")
+    private String qrCodePath;
 
     @Schema(description = "报告生成时间")
     private LocalDateTime generatedAt;

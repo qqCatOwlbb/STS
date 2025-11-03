@@ -1,11 +1,11 @@
 package com.catowl.sts.controller;
 
 import com.catowl.sts.exception.BadRequestException;
-import com.catowl.sts.model.DTO.Request.UserLoginRequest;
-import com.catowl.sts.model.DTO.Request.UserRegisterRequest;
-import com.catowl.sts.model.DTO.Request.UserUpdateRequest;
-import com.catowl.sts.model.DTO.Response.MyApiResponse;
-import com.catowl.sts.model.DTO.Response.UserResponse;
+import com.catowl.sts.model.dto.Request.UserLoginRequest;
+import com.catowl.sts.model.dto.Request.UserRegisterRequest;
+import com.catowl.sts.model.dto.Request.UserUpdateRequest;
+import com.catowl.sts.model.dto.Response.MyApiResponse;
+import com.catowl.sts.model.dto.Response.UserResponse;
 import com.catowl.sts.model.entity.User;
 import com.catowl.sts.service.UserService;
 import io.swagger.annotations.Api;

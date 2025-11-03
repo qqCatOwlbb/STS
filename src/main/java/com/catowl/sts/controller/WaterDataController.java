@@ -1,12 +1,17 @@
 package com.catowl.sts.controller;
 
-import com.catowl.sts.model.DTO.Request.DataUploadRequest;
-import com.catowl.sts.model.DTO.Response.MyApiResponse;
-import com.catowl.sts.model.DTO.Response.DataQueryResponse;
-import com.catowl.sts.model.DTO.Response.DataUploadResponse;
+import com.catowl.sts.model.dto.Request.DataUploadRequest;
+import com.catowl.sts.model.dto.Response.MyApiResponse;
+import com.catowl.sts.model.dto.Response.DataQueryResponse;
+import com.catowl.sts.model.dto.Response.DataUploadResponse;
+import com.catowl.sts.model.entity.User;
+import com.catowl.sts.service.WaterDataService;
 import io.swagger.annotations.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -19,22 +24,20 @@ import java.util.List;
 @Api(tags = "3. 水质数据", description = "处理传感器数据的上传和查询")
 public class WaterDataController {
 
+    @Autowired
+    private WaterDataService waterDataService;
+
     @PostMapping("/upload")
     @ApiOperation(value = "上传水质数据", notes = "供传感器或边缘设备调用，上传单条浊度数据")
     @ApiResponses({
             @ApiResponse(code = 202, message = "数据已接收")
     })
-    public ResponseEntity<MyApiResponse<DataUploadResponse>> uploadData(
+    public ResponseEntity<MyApiResponse<String>> uploadData(
             @Valid @RequestBody DataUploadRequest dataRequest) {
-
-        // --- Mock Data ---
-        DataUploadResponse mockResponse = new DataUploadResponse();
-        mockResponse.setStatus("success");
-        mockResponse.setDataStrId("data_ulid_mock_789");
-
-        MyApiResponse<DataUploadResponse> response = new MyApiResponse<>("数据已接收", mockResponse);
-        // 使用 202 Accepted 表示已接收，正在异步处理
-        return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        waterDataService.uploadData(dataRequest,user.getId());
+        return new ResponseEntity<>(new MyApiResponse<>("数据上传成功", null),HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/query/{sourceStrId}")
@@ -44,22 +47,9 @@ public class WaterDataController {
             @PathVariable String sourceStrId,
             @ApiParam(value = "查询开始时间 (ISO 8601)") @RequestParam(required = false) LocalDateTime startTime,
             @ApiParam(value = "查询结束时间 (ISO 8601)") @RequestParam(required = false) LocalDateTime endTime) {
-
-        // --- Mock Data ---
-        DataQueryResponse mockData1 = new DataQueryResponse();
-        mockData1.setStrId("data_ulid_mock_789");
-        mockData1.setTurbidityValue(new BigDecimal("150.75"));
-        mockData1.setUnit("NTU");
-        mockData1.setMeasuredAt(LocalDateTime.now().minusHours(2));
-
-        DataQueryResponse mockData2 = new DataQueryResponse();
-        mockData2.setStrId("data_ulid_mock_790");
-        mockData2.setTurbidityValue(new BigDecimal("162.10"));
-        mockData2.setUnit("NTU");
-        mockData2.setMeasuredAt(LocalDateTime.now().minusHours(1));
-
-        List<DataQueryResponse> mockList = List.of(mockData1, mockData2);
-        MyApiResponse<List<DataQueryResponse>> response = new MyApiResponse<>("查询成功", mockList);
-        return ResponseEntity.ok(response);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        List<DataQueryResponse> dataList = waterDataService.queryData(startTime,endTime,sourceStrId, user.getId());
+        return ResponseEntity.ok(new MyApiResponse<>("获取近期数据成功",dataList));
     }
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -27,5 +28,11 @@ public class WaterSource implements Serializable {
 
     private String difyConversationId;
 
-    private User user;
+    private String description;
+
+    private Boolean isActive;
+
+    private LocalDateTime createdAt;
+
+    private Long userId;
 }

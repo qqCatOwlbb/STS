@@ -27,12 +27,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry){
-        String qrLocation = Paths.get(qrDir).toUri().toString();
+        String qrLocation = "file:" + qrDir + "/";
         registry.addResourceHandler("/qrcode/**")
                 .addResourceLocations(qrLocation)
                 .setCachePeriod(3600);//缓存1h
 
-        String avatarLocation = Paths.get(upDir).toUri().toString();
+        String avatarLocation = "file:" + upDir + "/";
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations(avatarLocation)
                 .setCachePeriod(3600);

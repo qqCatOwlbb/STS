@@ -1,4 +1,4 @@
-package com.catowl.sts.model.DTO.Response;
+package com.catowl.sts.model.dto.Response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -31,5 +31,5 @@ public class ReportResponse {
     private String difyMessageId;
 
     @Schema(description = "是否已发布 (公开)", example = "false")
-    private boolean isPublished;
+    private Boolean isPublished;
 }

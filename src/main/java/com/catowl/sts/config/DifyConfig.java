@@ -17,6 +17,6 @@ public class DifyConfig {
 
     @Bean
     public DifyChatflowClient difyChatflowClient(){
-        return DifyClientFactory.createChatWorkflowClient(apikey,baseUrl);
+        return DifyClientFactory.createChatWorkflowClient(baseUrl,apikey);
     }
 }

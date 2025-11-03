@@ -3,8 +3,10 @@ package com.catowl.sts.mapper;
 import com.catowl.sts.model.entity.AnalysisReport;
 import com.catowl.sts.model.entity.WaterQualityData;
 import com.catowl.sts.model.entity.WaterSource;
+import com.catowl.sts.model.vo.ReportWithSourceDetails;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
@@ -27,7 +29,35 @@ public interface ReportMapper {
     WaterSource findWaterSourceByStrId(@Param("sourceStrId") String sourceStrId);
 
     /**
-     * 5. 根据水源 ID 查询最近的水质数据
+     * 4. 根据水源 ID 查询最近的水质数据
      */
     List<WaterQualityData> findRecentDataBySourceId(@Param("sourceId") Long sourceId, @Param("limit") int limit);
+
+    /**
+     * 5. 获取用户的所有报告（通过source_id关联user_id）
+     */
+    List<AnalysisReport> findReportsByUserId(@Param("userId") Long userId);
+
+    /**
+     * 6. 获取用户拥有的特定报告（私人）
+     */
+    AnalysisReport findReportByStrIdAndUserId(@Param("reportStrId") String reportStrId, @Param("userId") Long userId);
+
+    /**
+     * 7. 获取已发布的公开报告（公开）
+     */
+    ReportWithSourceDetails findPublishedReportByStrId(@Param("reportStrId") String reportStrId);
+
+    /**
+     * 8. 更新报告发布状态（私人）
+     * */
+    int updateReportStatusByStrIdAndUserId(@Param("reportStrId") String reportStrId,
+                                           @Param("userId") Long userId,
+                                           @Param("isPublished") boolean isPublished);
+
+    /**
+     * 9. 删除报告（私人）
+     * */
+    int deleteReportByStrIdAndUserId(@Param("reportStrId") String reportStrId, @Param("userId") Long userId);
+
 }

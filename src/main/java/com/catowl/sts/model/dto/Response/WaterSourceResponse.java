@@ -1,4 +1,4 @@
-package com.catowl.sts.model.DTO.Response;
+package com.catowl.sts.model.dto.Response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -31,5 +31,5 @@ public class WaterSourceResponse {
     private LocalDateTime createdAt;
 
     @Schema(description = "是否激活", example = "true")
-    private boolean isActive;
+    private Boolean isActive;
 }

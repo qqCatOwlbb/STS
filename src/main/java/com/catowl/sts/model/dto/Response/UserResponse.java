@@ -1,7 +1,6 @@
-package com.catowl.sts.model.DTO.Response;
+package com.catowl.sts.model.dto.Response;
 
 import com.catowl.sts.model.entity.User;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;

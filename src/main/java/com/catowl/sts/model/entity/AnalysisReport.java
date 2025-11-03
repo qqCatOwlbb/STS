@@ -18,5 +18,6 @@ public class AnalysisReport implements Serializable {
     private String qrCodePath;
     private LocalDateTime generatedAt;
     private String difyMessageId;
+    private String sourceStrId;
     private boolean isPublished; // (新增) 对应数据库 is_published 字段
 }

@@ -1,6 +1,5 @@
 package com.catowl.sts.service;
 
-import com.catowl.sts.model.DTO.Response.UserResponse;
 import com.catowl.sts.model.entity.User;
 import org.springframework.web.multipart.MultipartFile;
 

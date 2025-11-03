@@ -44,7 +44,7 @@ public class SwaggerConfig {
                 "catowl的swaggerAPI文档",
                 "该文档可帮助你实现对后端的交互",
                 "1.0",
-                "http://www.baidu.com",
+                "https://github.com/qqCatOwlbb/STS.git",
                 contact,
                 "Apache2.0",
                 "http://www.apache.org/licenses/LICENSE-2.0",
@@ -62,7 +62,7 @@ public class SwaggerConfig {
         return Collections.singletonList(
                 SecurityContext.builder()
                         .securityReferences(defaultAuth())
-                        .forPaths(PathSelectors.regex("^(?!.*(login|register)).*$"))
+                        .forPaths(PathSelectors.regex("^(?!.*(login|register|public)).*$"))
                         .build()
         );
     }

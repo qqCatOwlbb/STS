@@ -1,4 +1,4 @@
-package com.catowl.sts.model.DTO.Response;
+package com.catowl.sts.model.dto.Response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

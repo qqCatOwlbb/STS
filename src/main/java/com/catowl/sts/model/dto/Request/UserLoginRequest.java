@@ -1,4 +1,4 @@
-package com.catowl.sts.model.DTO.Request;
+package com.catowl.sts.model.dto.Request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -6,24 +6,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "用户注册请求体")
-public class UserRegisterRequest {
+@Schema(description = "用户登录请求体")
+public class UserLoginRequest {
     @NotBlank
-    @Size(min = 3, max = 50)
     @Schema(description = "用户名", example = "new_user", required = true)
     private String username;
 
     @NotBlank
-    @Size(min = 6, max = 100)
     @Schema(description = "用户密码", example = "password123", required = true)
     private String password;
-
-    @NotBlank
-    @Schema(description = "dify的api", example = "password123", required = true)
-    private String apiKey;
 }
