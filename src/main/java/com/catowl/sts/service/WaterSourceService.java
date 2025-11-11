@@ -17,5 +17,5 @@ public interface WaterSourceService {
 
     WaterSourceResponse getWaterSource(String sourceStrId,Long userId);
 
-    List<WaterSourceResponse> getAllWaterSources(Long userId, String lastStrId, int pageSize);
+    List<WaterSourceResponse> getAllWaterSources(Long userId, String lastStrId, int pageSize, String searchName);
 }

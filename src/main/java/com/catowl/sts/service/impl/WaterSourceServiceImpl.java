@@ -162,8 +162,8 @@ public class WaterSourceServiceImpl implements WaterSourceService {
     }
 
     @Override
-    public List<WaterSourceResponse> getAllWaterSources(Long userId, String lastStrId, int pageSize){
-        List<WaterSource> sources = waterSourceMapper.findSourcesByUserIdWithCursor(userId, lastStrId, pageSize);
+    public List<WaterSourceResponse> getAllWaterSources(Long userId, String lastStrId, int pageSize, String searchName){
+        List<WaterSource> sources = waterSourceMapper.findSourcesByUserIdWithCursor(userId, lastStrId, pageSize, searchName);
         return sources.stream()
                 .map(this::convertToResponseDto)
                 .collect(Collectors.toList());

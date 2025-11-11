@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         //获取token
         String token = request.getHeader("Authorization");
 
-        if(!StringUtils.hasText(token)){
+        if(!StringUtils.hasText(token)|| !token.startsWith("Bearer ")){
             //token为空，应该让其跳过下面的token解析代码，交由security内的拦截器来拦截
             chain.doFilter(request,response);
             //拦截器拦截完返回时会再次进入该if，同样要避免执行下面的token解析代码

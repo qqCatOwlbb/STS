@@ -8,6 +8,7 @@ import com.catowl.sts.model.entity.User;
 import com.catowl.sts.service.WaterSourceService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -45,10 +46,12 @@ public class WaterSourceController {
             @ApiParam(value = "上一页最后一条记录的 strId (首页查询则不传)", example = "source_ulid_mock_page1_item2")
             @RequestParam(required = false) String lastStrId,
             @ApiParam(value = "每页大小", example = "10")
-            @RequestParam(defaultValue = "10") int pageSize) {
+            @RequestParam(defaultValue = "10") int pageSize,
+            @ApiParam(value = "水源名称模糊查询关键词（可不填）", example = "总部")
+            @RequestParam(required = false) String searchName) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
-        List<WaterSourceResponse> response = waterSourceService.getAllWaterSources(user.getId(), lastStrId, pageSize);
+        List<WaterSourceResponse> response = waterSourceService.getAllWaterSources(user.getId(), lastStrId, pageSize, searchName);
         return ResponseEntity.ok(new MyApiResponse<>("获取成功", response));
     }
 

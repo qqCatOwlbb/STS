@@ -35,6 +35,7 @@ public interface WaterSourceMapper {
     List<WaterSource> findSourcesByUserIdWithCursor(
             @Param("userId") Long userId,
             @Param("lastStrId") String lastStrId,
-            @Param("pageSize") int pageSize
+            @Param("pageSize") int pageSize,
+            @Param("searchName") String searchName
     );
 }

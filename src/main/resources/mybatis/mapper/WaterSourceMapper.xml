@@ -44,8 +44,10 @@
         FROM water_sources
         WHERE user_id = #{userId}
         <if test="lastStrId != null and lastStrId != ''">
-            <!-- 假设 str_id (ULID) 是按时间排序的 -->
             AND str_id &gt; #{lastStrId}
+        </if>
+        <if test="searchName != null and searchName != ''">
+            AND source_name LIKE CONCAT('%', #{searchName}, '%')
         </if>
         ORDER BY str_id ASC
         LIMIT #{pageSize}

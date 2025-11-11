@@ -19,8 +19,8 @@ public class UserUpdateRequest {
     @Schema(description = "用户密码", example = "password123")
     private String password;
 
-    @Schema(description = "dify的api", example = "key-dsda")
-    private String apiKey;
+    @Schema(description = "邮箱", example = "123456@qq.com")
+    private String email;
 
     @ApiModelProperty(
             hidden = true
@@ -28,6 +28,6 @@ public class UserUpdateRequest {
     public void setUser(User user) {
         user.setUsername(this.username);
         user.setPassword(this.password);
-        user.setApiKey(this.apiKey);
+        user.setApiKey(this.email);
     }
 }
