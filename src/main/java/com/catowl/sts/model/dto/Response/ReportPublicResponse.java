@@ -24,6 +24,9 @@ public class ReportPublicResponse {
     @Schema(description = "Dify 生成的报告全文 (Markdown 或 Text)")
     private String reportContent;
 
+    @Schema(description = "报告提取的关键词", example = "浊度，异常，建议")
+    private String keywords;
+
     @Schema(description = "二维码的存储路径")
     private String qrCodePath;
 

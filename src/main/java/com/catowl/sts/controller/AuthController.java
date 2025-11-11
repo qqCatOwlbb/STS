@@ -42,7 +42,6 @@ public class AuthController {
        User user = new User();
        user.setUsername(registerRequest.getUsername());
        user.setPassword(registerRequest.getPassword());
-       user.setApiKey(registerRequest.getApiKey());
         if((user.getUsername()==null||user.getUsername().isEmpty())||(user.getPassword()==null||user.getPassword().isEmpty())){
             throw new BadRequestException("用户名或密码不能为空");
         }

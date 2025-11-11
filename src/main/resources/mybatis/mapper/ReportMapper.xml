@@ -7,10 +7,10 @@
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO analysis_reports
         (str_id, source_id, report_content, qr_code_path,
-         dify_message_id, is_published, generated_at)
+         dify_message_id, keywords, is_published, generated_at)
         VALUES
             (#{strId}, #{sourceId}, #{reportContent}, #{qrCodePath},
-             #{difyMessageId}, #{isPublished}, NOW())
+             #{difyMessageId}, #{keywords}, #{isPublished}, NOW())
     </insert>
 
     <!-- 2. 批量插入报告与数据的关联 -->
@@ -24,7 +24,7 @@
 
     <!-- 3. 根据 StrId 查找水源信息 -->
     <select id="findWaterSourceByStrId" resultType="com.catowl.sts.model.entity.WaterSource">
-        SELECT id, str_id, user_id, dify_conversation_id
+        SELECT id, str_id, user_id, dify_conversation_id, source_name, source_type, description
         FROM water_sources
         WHERE str_id = #{sourceStrId} AND is_active = 1
     </select>
@@ -41,23 +41,34 @@
     <!-- 6. 获取用户的所有报告 (JOIN 水源表) -->
     <select id="findReportsByUserId" resultType="com.catowl.sts.model.entity.AnalysisReport">
         SELECT
-            r.id, r.str_id, r.source_id, r.report_content, r.qr_code_path,
-            r.generated_at, r.is_published, r.dify_message_id,
-            s.str_id AS sourceStrId
-        FROM analysis_reports r
-                 JOIN water_sources s ON r.source_id = s.id
-        WHERE s.user_id = #{userId}
-        ORDER BY r.generated_at DESC
+        r.str_id,
+        r.keywords,
+        r.generated_at
+        FROM
+        analysis_reports r
+        JOIN
+        water_sources s ON r.source_id = s.id
+        WHERE
+        s.user_id = #{userId} <!-- 并校验用户ID -->
+        <if test="lastStrId != null and lastStrId != ''">
+            <!-- 游标分页：获取比上一页最后一条记录更早的记录 (str_id 倒序) -->
+            AND r.str_id &lt; #{lastStrId}
+        </if>
+        ORDER BY
+        r.str_id DESC
+        LIMIT #{pageSize}
     </select>
 
     <!-- 7. 获取用户拥有的特定报告 (JOIN 水源表) -->
-    <select id="findReportByStrIdAndUserId" resultType="com.catowl.sts.model.entity.AnalysisReport">
+    <select id="findReportByStrIdAndUserId" resultType="com.catowl.sts.model.vo.ReportDetailVO">
         SELECT
             r.id, r.str_id, r.source_id, r.report_content, r.qr_code_path,
-            r.generated_at, r.is_published, r.dify_message_id,
-            s.str_id AS sourceStrId
+            r.generated_at, r.is_published, r.dify_message_id, r.keywords,
+            s.source_name,s.source_type, s.str_id AS sourceStrId,
+            u.username
         FROM analysis_reports r
                  JOIN water_sources s ON r.source_id = s.id
+                 JOIN users u ON s.user_id = u.id
         WHERE r.str_id = #{reportStrId}
           AND s.user_id = #{userId}
     </select>
@@ -69,6 +80,7 @@
             r.report_content,
             r.qr_code_path,
             r.generated_at,
+            r.keywords,
 
             s.source_name AS sourceName,
             s.source_type AS sourceType
@@ -96,4 +108,42 @@
         WHERE r.str_id = #{reportStrId}
         AND s.user_id = #{userId}
     </delete>
+
+    <select id="findReportTagsBySourceIdWithCursor" resultType="com.catowl.sts.model.entity.AnalysisReport">
+        SELECT
+        r.str_id,
+        r.keywords,
+        r.generated_at
+        FROM
+        analysis_reports r
+        JOIN
+        water_sources s ON r.source_id = s.id
+        WHERE
+        s.str_id = #{sourceStrId}  <!-- 直接使用 sourceStrId -->
+        AND s.user_id = #{userId} <!-- 并校验用户ID -->
+        <if test="lastStrId != null and lastStrId != ''">
+            <!-- 游标分页：获取比上一页最后一条记录更早的记录 (str_id 倒序) -->
+            AND r.str_id &lt; #{lastStrId}
+        </if>
+        ORDER BY
+        r.str_id DESC
+        LIMIT #{pageSize}
+    </select>
+
+    <select id="findLinkedDataByReportId" resultType="com.catowl.sts.model.entity.WaterQualityData">
+        SELECT
+            wqd.id,
+            wqd.str_id,
+            wqd.turbidity_value,
+            wqd.unit,
+            wqd.measured_at
+        FROM
+            water_quality_data wqd
+                JOIN
+            report_data_links rdl ON wqd.id = rdl.data_id
+        WHERE
+            rdl.report_id = #{reportId}
+        ORDER BY
+            wqd.measured_at ASC
+    </select>
 </mapper>

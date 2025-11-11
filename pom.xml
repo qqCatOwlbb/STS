@@ -6,7 +6,7 @@
 
     <groupId>org.example</groupId>
     <artifactId>STS</artifactId>
-    <version>1.2</version>
+    <version>1.5</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -113,6 +113,10 @@
             <version>3.4.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.ansj</groupId>
+            <artifactId>ansj_seg</artifactId>
+            <version>5.1.6</version> </dependency>
 
         <!-- FastJSON -->
         <dependency>

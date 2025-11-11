@@ -1,24 +1,32 @@
-package com.catowl.sts.model.entity;
+package com.catowl.sts.model.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AnalysisReport implements Serializable {
+public class ReportDetailVO {
+    // 报告ID (Long)，用于查询关联数据
     private Long id;
+
+    // 报告表 (analysis_reports)
     private String strId;
-    private Long sourceId; // 扁平化外键, 允许为 NULL
     private String reportContent;
     private String qrCodePath;
     private LocalDateTime generatedAt;
     private String difyMessageId;
     private String keywords;
+    private boolean isPublished;
+
+    // 水源表 (water_sources)
+    private String sourceName;
+    private String sourceType;
     private String sourceStrId;
-    private boolean isPublished; // (新增) 对应数据库 is_published 字段
+
+    // 用户表 (users)
+    private String username;
 }

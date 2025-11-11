@@ -13,8 +13,8 @@
         SELECT `id`,`str_id`,username,password,`avatar`,`api_key`,created_at,updated_at FROM users WHERE username = #{username}
     </select>
     <insert id="insertUser" parameterType="com.catowl.sts.model.entity.User">
-        INSERT INTO users (username,password,api_key,str_id)
-        VALUES (#{username},#{password},#{apiKey},#{strId});
+        INSERT INTO users (username,password,str_id)
+        VALUES (#{username},#{password},#{strId});
     </insert>
     <update id="updateUser" parameterType="com.catowl.sts.model.entity.User">
         UPDATE users

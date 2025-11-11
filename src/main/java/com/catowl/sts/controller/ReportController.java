@@ -1,9 +1,7 @@
 package com.catowl.sts.controller;
 
 import com.catowl.sts.model.dto.Request.ReportGenerateRequest;
-import com.catowl.sts.model.dto.Response.MyApiResponse;
-import com.catowl.sts.model.dto.Response.ReportResponse;
-import com.catowl.sts.model.dto.Response.ReportStatusUpdateResponse;
+import com.catowl.sts.model.dto.Response.*;
 import com.catowl.sts.model.entity.User;
 import com.catowl.sts.service.ReportService;
 import io.swagger.annotations.Api;
@@ -42,22 +40,42 @@ public class ReportController {
 
     @GetMapping
     @ApiOperation(value = "获取当前用户的所有报告", notes = "列出当前用户的所有报告 (包括未发布的)")
-    public ResponseEntity<MyApiResponse<List<ReportResponse>>> getAllReports() {
+    public ResponseEntity<MyApiResponse<List<ReportTagResponse>>> getAllReports(
+            @ApiParam(value = "上一页最后一条记录的 strId (首页查询则不传)", example = "report_ulid_mock_page1_item2")
+            @RequestParam(required = false) String lastStrId,
+            @ApiParam(value = "每页大小", example = "10")
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
-        List<ReportResponse> reports = reportService.getReportsForUser(user.getId());
+        List<ReportTagResponse> reports = reportService.getReportsForUser(user.getId(), lastStrId, pageSize);
         return ResponseEntity.ok(new MyApiResponse<>("获取成功", reports));
     }
 
     @GetMapping("/{reportStrId}")
     @ApiOperation(value = "获取特定报告详情 (私有)", notes = "获取报告详情，无论是否发布 (需要所有权)")
-    public ResponseEntity<MyApiResponse<ReportResponse>> getReportById(
+    public ResponseEntity<MyApiResponse<ReportDetailResponse>> getReportById(
             @ApiParam(value = "报告的字符串ID", example = "report_ulid_mock_qwe")
             @PathVariable String reportStrId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
-        ReportResponse report = reportService.getReportByIdForUser(reportStrId,user.getId());
+        ReportDetailResponse report = reportService.getReportByIdForUser(reportStrId,user.getId());
         return ResponseEntity.ok(new MyApiResponse<>("获取成功", report));
+    }
+
+    @GetMapping("/by-source/{sourceStrId}")
+    @ApiOperation(value = "根据水源ID获取报告列表", notes = "只获取报告id以及报告关键字，供用户选择，具体查询请调用/{reportStrId}")
+    public ResponseEntity<MyApiResponse<List<ReportTagResponse>>> getReportsBySourceStrId(
+            @ApiParam(value = "水源的字符串ID", example = "source_ulid_mock_page1_item2")
+            @PathVariable String sourceStrId,
+            @ApiParam(value = "上一页最后一条记录的 strId (首页查询则不传)", example = "report_ulid_mock_page1_item2")
+            @RequestParam(required = false) String lastStrId,
+            @ApiParam(value = "每页大小", example = "10")
+            @RequestParam(defaultValue = "10") int pageSize){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        List<ReportTagResponse> response = reportService.getReportTagsBySourceId(sourceStrId,user.getId(),lastStrId,pageSize);
+        return ResponseEntity.ok(new MyApiResponse<>("获取报告列表成功",response));
     }
 
     @DeleteMapping("/{reportStrId}")

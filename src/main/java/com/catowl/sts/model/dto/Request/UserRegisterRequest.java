@@ -23,7 +23,4 @@ public class UserRegisterRequest {
     @Schema(description = "用户密码", example = "password123", required = true)
     private String password;
 
-    @NotBlank
-    @Schema(description = "dify的api", example = "password123", required = true)
-    private String apiKey;
 }

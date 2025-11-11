@@ -3,6 +3,7 @@ package com.catowl.sts.mapper;
 import com.catowl.sts.model.entity.AnalysisReport;
 import com.catowl.sts.model.entity.WaterQualityData;
 import com.catowl.sts.model.entity.WaterSource;
+import com.catowl.sts.model.vo.ReportDetailVO;
 import com.catowl.sts.model.vo.ReportWithSourceDetails;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -36,12 +37,12 @@ public interface ReportMapper {
     /**
      * 5. 获取用户的所有报告（通过source_id关联user_id）
      */
-    List<AnalysisReport> findReportsByUserId(@Param("userId") Long userId);
+    List<AnalysisReport> findReportsByUserId(@Param("userId") Long userId, @Param("lastStrId") String lastStrId, @Param("pageSize") int pageSize);
 
     /**
      * 6. 获取用户拥有的特定报告（私人）
      */
-    AnalysisReport findReportByStrIdAndUserId(@Param("reportStrId") String reportStrId, @Param("userId") Long userId);
+    ReportDetailVO findReportByStrIdAndUserId(@Param("reportStrId") String reportStrId, @Param("userId") Long userId);
 
     /**
      * 7. 获取已发布的公开报告（公开）
@@ -59,5 +60,20 @@ public interface ReportMapper {
      * 9. 删除报告（私人）
      * */
     int deleteReportByStrIdAndUserId(@Param("reportStrId") String reportStrId, @Param("userId") Long userId);
+
+    /**
+     * 10. 根据水源ID游标分页查询报告标签
+     * */
+    List<AnalysisReport> findReportTagsBySourceIdWithCursor(
+            @Param("sourceStrId") String sourceStrId,
+            @Param("userId") Long userId,
+            @Param("lastStrId") String lastStrId,
+            @Param("pageSize") int pageSize
+    );
+
+    /**
+     * 根据报告ID查询所有关联的水质数据
+     * */
+    List<WaterQualityData> findLinkedDataByReportId(@Param("reportId") Long reportId);
 
 }

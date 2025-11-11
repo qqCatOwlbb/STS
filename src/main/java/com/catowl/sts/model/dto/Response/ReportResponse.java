@@ -30,6 +30,9 @@ public class ReportResponse {
     @Schema(description = "Dify 返回的消息ID", example = "msg_12345")
     private String difyMessageId;
 
+    @Schema(description = "报告提取的关键词", example = "浊度，异常，建议")
+    private String keywords;
+
     @Schema(description = "是否已发布 (公开)", example = "false")
     private Boolean isPublished;
 }

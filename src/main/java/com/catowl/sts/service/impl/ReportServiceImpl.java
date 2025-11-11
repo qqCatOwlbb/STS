@@ -4,13 +4,12 @@ import com.catowl.sts.exception.BadRequestException;
 import com.catowl.sts.exception.InternetServerException;
 import com.catowl.sts.mapper.ReportMapper;
 import com.catowl.sts.model.dto.Request.ReportGenerateRequest;
-import com.catowl.sts.model.dto.Response.ReportPublicResponse;
-import com.catowl.sts.model.dto.Response.ReportResponse;
-import com.catowl.sts.model.dto.Response.ReportStatusUpdateResponse;
+import com.catowl.sts.model.dto.Response.*;
 import com.catowl.sts.model.entity.AnalysisReport;
 import com.catowl.sts.model.entity.User;
 import com.catowl.sts.model.entity.WaterQualityData;
 import com.catowl.sts.model.entity.WaterSource;
+import com.catowl.sts.model.vo.ReportDetailVO;
 import com.catowl.sts.model.vo.ReportWithSourceDetails;
 import com.catowl.sts.service.ReportService;
 import com.catowl.sts.utils.MyQrCodeUtil;
@@ -21,6 +20,8 @@ import io.github.imfangs.dify.client.enums.ResponseMode;
 import io.github.imfangs.dify.client.exception.DifyApiException;
 import io.github.imfangs.dify.client.model.chat.ChatMessage;
 import io.github.imfangs.dify.client.model.chat.ChatMessageResponse;
+import org.ansj.domain.Term;
+import org.ansj.splitWord.analysis.NlpAnalysis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -34,6 +35,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -139,7 +141,11 @@ public class ReportServiceImpl implements ReportService {
         return ChatMessage.builder()
                 .query("请根据最新数据生成分析报告")
                 .user(user.getStrId())
-                .inputs(Map.of("recent_turbidity_data", formattedData))
+                .inputs(Map.of(
+                        "sourceName", waterSource.getSourceName(),
+                        "sourceType", waterSource.getSourceType(),
+                        "description", waterSource.getDescription(),
+                        "recent_turbidity_data", formattedData))
                 .conversationId(waterSource.getDifyConversationId())
                 .responseMode(ResponseMode.BLOCKING)
                 .build();
@@ -158,11 +164,36 @@ public class ReportServiceImpl implements ReportService {
         report.setPublished(false);
         report.setGeneratedAt(LocalDateTime.now());
 
+        //关键词提取
+        List<Term> terms = NlpAnalysis.parse(reportContent).getTerms();
+        List<String> nouns = terms.stream()
+                .filter(term -> term.getNatureStr() != null && term.getNatureStr().startsWith("n"))
+                .map(Term::getName)
+                .filter(name -> name.length() > 1)
+                .distinct()
+                .toList();
+        List<String> focusWords = Arrays.asList(
+                "清澈", "污染", "混浊", "良好", "恶化", "改善", "下降", "升高", "波动",
+
+                // 二、可能原因相关
+                "降雨", "天气", "气候", "温度", "泥沙", "底泥", "施工", "人工活动", "排水", "藻类", "水生植物",
+                "扰动", "沉降", "流动", "外来物", "杂质",
+
+                // 三、措施与建议相关
+                "治理", "调控", "过滤", "净化", "修复", "管理", "监测", "保持", "维护", "生态",
+                "沉淀", "清理", "防护", "控制", "优化", "水循环", "稳定"
+        );
+        String keywords = nouns.stream()
+                .filter(word -> focusWords.stream().anyMatch(word::contains))
+                .limit(5)
+                .collect(Collectors.joining(","));
+        report.setKeywords(keywords);
+
         //生成二维码
         File reportDir = new File(qrDir + File.separator + report.getStrId());
         String fileName = difyMessageId + ".png";
         String contentUrl = frontendBaseUrl + "/reports/" + report.getStrId();
-        MyQrCodeUtil.createCodeToFile("https://github.com/qqCatOwlbb/STS.git", reportDir,fileName);
+        MyQrCodeUtil.createCodeToFile("https://www.bilibili.com/video/BV1GJ411x7h7/?spm_id_from=333.337.search-card.all.click&vd_source=b9e088f55d435bcece3c1df8435e38ee", reportDir,fileName);
 
         String urlPath = "/qrcode/" + report.getStrId() + "/" +fileName;
         report.setQrCodePath(urlPath);
@@ -181,24 +212,51 @@ public class ReportServiceImpl implements ReportService {
         dto.setQrCodePath(report.getQrCodePath());
         dto.setGeneratedAt(report.getGeneratedAt());
         dto.setIsPublished(report.isPublished());
+        dto.setKeywords(report.getKeywords());
         return dto;
     }
 
     @Override
-    public List<ReportResponse> getReportsForUser(Long userId){
-        List<AnalysisReport> reports = reportMapper.findReportsByUserId(userId);
+    public List<ReportTagResponse> getReportsForUser(Long userId, String lastStrId, int pageSize){
+        List<AnalysisReport> reports = reportMapper.findReportsByUserId(userId, lastStrId, pageSize);
         return reports.stream()
-                .map(this::convertToResponseDTO)
+                .map(report -> new ReportTagResponse(report.getStrId(), report.getKeywords(), report.getGeneratedAt()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ReportResponse getReportByIdForUser(String reportStrId, Long userId){
-        AnalysisReport report = reportMapper.findReportByStrIdAndUserId(reportStrId, userId);
+    @Transactional
+    public ReportDetailResponse getReportByIdForUser(String reportStrId, Long userId){
+        ReportDetailVO report = reportMapper.findReportByStrIdAndUserId(reportStrId, userId);
         if(report == null){
             throw new BadRequestException("报告未找到或无权访问");
         }
-        return convertToResponseDTO(report);
+
+        List<WaterQualityData> dataList = reportMapper.findLinkedDataByReportId(report.getId());
+        List<DataQueryResponse> dataResponseList = dataList.stream()
+                .map(data -> new DataQueryResponse(
+                        data.getStrId(),
+                        data.getTurbidityValue(),
+                        data.getUnit(),
+                        data.getMeasuredAt()
+                ))
+                .toList();
+        ReportDetailResponse response = new ReportDetailResponse();
+        response.setFromVO(report);
+        response.setUsedData(dataResponseList);
+        return response;
+    }
+
+    @Override
+    public List<ReportTagResponse> getReportTagsBySourceId(String sourceStrId, Long userId, String lastStrId, int pageSize){
+        return reportMapper.findReportTagsBySourceIdWithCursor(
+                sourceStrId,
+                userId,
+                lastStrId,
+                pageSize
+        ).stream()
+                .map(report -> new ReportTagResponse(report.getStrId(),report.getKeywords(),report.getGeneratedAt()))
+                .toList();
     }
 
     @Override
@@ -234,6 +292,7 @@ public class ReportServiceImpl implements ReportService {
         dto.setReportContent(report.getReportContent());
         dto.setQrCodePath(report.getQrCodePath());
         dto.setGeneratedAt(report.getGeneratedAt());
+        dto.setKeywords(report.getKeywords());
         return dto;
     }
 

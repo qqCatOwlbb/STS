@@ -62,6 +62,7 @@ public class PublicReportServiceImpl implements PublicReportService {
         dto.setReportContent(report.getReportContent());
         dto.setQrCodePath(report.getQrCodePath());
         dto.setGeneratedAt(report.getGeneratedAt());
+        dto.setKeywords(report.getKeywords());
         return dto;
     }
 }
