@@ -70,7 +70,7 @@ public class ReportController {
             @PathVariable String sourceStrId,
             @ApiParam(value = "上一页最后一条记录的 strId (首页查询则不传)", example = "report_ulid_mock_page1_item2")
             @RequestParam(required = false) String lastStrId,
-            @ApiParam(value = "每页大小", example = "10")
+            @ApiParam(value = "每页大小（不填就是默认为10）", example = "10")
             @RequestParam(defaultValue = "10") int pageSize){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
