@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.catowl.sts.mapper.AuthMapper">
     <select id="selectUser" resultType="com.catowl.sts.model.entity.User">
-        SELECT `str_id`,username,`avatar`, created_at, updated_at
+        SELECT `str_id`,username,`avatar`, created_at, updated_at, api_key
         FROM `users`
         WHERE `id`=#{id};
     </select>
@@ -13,8 +13,8 @@
         SELECT `id`,`str_id`,username,password,`avatar`,`api_key`,created_at,updated_at FROM users WHERE username = #{username}
     </select>
     <insert id="insertUser" parameterType="com.catowl.sts.model.entity.User">
-        INSERT INTO users (username,password,str_id)
-        VALUES (#{username},#{password},#{strId});
+        INSERT INTO users (username,password,str_id,api_key)
+        VALUES (#{username},#{password},#{strId},#{apiKey});
     </insert>
     <update id="updateUser" parameterType="com.catowl.sts.model.entity.User">
         UPDATE users

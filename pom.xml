@@ -6,7 +6,7 @@
 
     <groupId>org.example</groupId>
     <artifactId>STS</artifactId>
-    <version>1.6</version>
+    <version>2.0</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

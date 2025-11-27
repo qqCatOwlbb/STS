@@ -24,7 +24,7 @@ public class User implements Serializable, UserDetails {
     private String avatar;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String apiKey; // 新增字段
+    private String apiKey;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -49,10 +50,13 @@ public class WaterDataServiceImpl implements WaterDataService {
         ULID.Value ulid = ulidGenerator.nextValue();
 
         //构造实体
+        BigDecimal turData =
+                new BigDecimal("865.68")
+                        .multiply(BigDecimal.valueOf(5).subtract(request.getTurbidityValue()));
         WaterQualityData data = new WaterQualityData();
         data.setStrId(ulid.toString());
         data.setSourceId(sourceId);
-        data.setTurbidityValue(request.getTurbidityValue());
+        data.setTurbidityValue(turData);
         data.setUnit(request.getUnit());
         data.setMeasuredAt(request.getMeasuredAt());
         data.setUploadedAt(LocalDateTime.now());

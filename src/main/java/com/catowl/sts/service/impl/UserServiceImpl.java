@@ -73,6 +73,7 @@ public class UserServiceImpl implements UserService {
         String strId = ulid.toString();
         newUser.setStrId(strId);
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+        newUser.setApiKey(UUID.randomUUID().toString());
         return userMapper.insertUser(newUser);
     }
 
