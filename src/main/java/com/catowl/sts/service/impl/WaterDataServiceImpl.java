@@ -50,13 +50,13 @@ public class WaterDataServiceImpl implements WaterDataService {
         ULID.Value ulid = ulidGenerator.nextValue();
 
         //构造实体
-        BigDecimal turData =
+        /*BigDecimal turData =
                 new BigDecimal("865.68")
-                        .multiply(BigDecimal.valueOf(5).subtract(request.getTurbidityValue()));
+                        .multiply(BigDecimal.valueOf(5).subtract(request.getTurbidityValue()));*/
         WaterQualityData data = new WaterQualityData();
         data.setStrId(ulid.toString());
         data.setSourceId(sourceId);
-        data.setTurbidityValue(turData);
+        data.setTurbidityValue(request.getTurbidityValue());
         data.setUnit(request.getUnit());
         data.setMeasuredAt(request.getMeasuredAt());
         data.setUploadedAt(LocalDateTime.now());

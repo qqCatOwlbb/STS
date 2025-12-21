@@ -52,7 +52,7 @@ public class ReportServiceImpl implements ReportService {
     private static final int MAX_REPORT_ATTEMPTS = 50; // 10分钟内最大尝试次数
     private static final long RATE_LIMIT_WINDOW_MIN = 10; // 10分钟窗口
     private static final long LOCK_TIMEOUT_SEC = 60; // 锁超时时间60秒，防止死锁
-    private static final int RECENT_DATA_LIMIT = 20; // 查询最近20条数据
+    private static final int RECENT_DATA_LIMIT = 40; // 查询最近20条数据
     public static final long PUBLIC_REPORT_CACHE_HOURS = 24;
 
     @Autowired
@@ -190,13 +190,13 @@ public class ReportServiceImpl implements ReportService {
         report.setKeywords(keywords);
 
         //生成二维码
-        File reportDir = new File(qrDir + File.separator + report.getStrId());
+        /*File reportDir = new File(qrDir + File.separator + report.getStrId());
         String fileName = difyMessageId + ".png";
         String contentUrl = frontendBaseUrl + "/reports/" + report.getStrId();
         MyQrCodeUtil.createCodeToFile("https://www.bilibili.com/video/BV1GJ411x7h7/?spm_id_from=333.337.search-card.all.click&vd_source=b9e088f55d435bcece3c1df8435e38ee", reportDir,fileName);
 
-        String urlPath = "/qrcode/" + report.getStrId() + "/" +fileName;
-        report.setQrCodePath(urlPath);
+        String urlPath = "/qrcode/" + report.getStrId() + "/" +fileName;*/
+        report.setQrCodePath("nothing");
         reportMapper.insertReport(report);
         List<Long> dataIds = dataList.stream().map(WaterQualityData::getId).collect(Collectors.toList());
         reportMapper.insertReportDataLink(report.getId(),dataIds);

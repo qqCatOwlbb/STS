@@ -63,7 +63,7 @@ public class WaterSourceServiceImpl implements WaterSourceService {
             source.setStrId(ulid.toString());
             source.setUserId(user.getId());
             source.setSourceName(request.getSourceName());
-            source.setSourceType(request.getSourceType());
+            source.setSourceType("环境水源");
             source.setDescription(request.getDescription());
             source.setDifyConversationId(conversationId);
             source.setCreatedAt(LocalDateTime.now());

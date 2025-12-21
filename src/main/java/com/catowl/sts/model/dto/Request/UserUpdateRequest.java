@@ -28,6 +28,6 @@ public class UserUpdateRequest {
     public void setUser(User user) {
         user.setUsername(this.username);
         user.setPassword(this.password);
-        user.setApiKey(this.email);
+        user.setEmail(this.email);
     }
 }

@@ -16,7 +16,6 @@ public class WaterSourceCreateRequest {
     @Schema(description = "水源名称", example = "总部北侧排污口", required = true)
     private String sourceName;
 
-    @NotBlank
     @Schema(description = "水源来源 (AGRICULTURAL, INDUSTRIAL, DOMESTIC等)", example = "INDUSTRIAL", required = true)
     private String sourceType;
 
